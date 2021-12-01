@@ -1,0 +1,237 @@
+1.table calendar
+-- This script only contains the table creation statements and does not fully represent the table in database. It's still missing: indices, triggers. Do not use it as backup.
+
+-- Squences
+CREATE SEQUENCE IF NOT EXISTS calendar_no_seq
+
+-- Table Definition
+CREATE TABLE "public"."calendar" (
+    "no" int4 NOT NULL DEFAULT nextval('calendar_no_seq'::regclass),
+    "day" date NOT NULL,
+    PRIMARY KEY ("no")
+);
+2. table clinic
+-- This script only contains the table creation statements and does not fully represent the table in database. It's still missing: indices, triggers. Do not use it as backup.
+
+-- Squences
+CREATE SEQUENCE IF NOT EXISTS clinic_no_seq
+
+-- Table Definition
+CREATE TABLE "public"."clinic" (
+    "no" int4 NOT NULL DEFAULT nextval('clinic_no_seq'::regclass),
+    "class" varchar NOT NULL,
+    "name" varchar NOT NULL,
+    PRIMARY KEY ("no")
+);
+3. table diagnosis
+-- This script only contains the table creation statements and does not fully represent the table in database. It's still missing: indices, triggers. Do not use it as backup.
+
+-- Squences
+CREATE SEQUENCE IF NOT EXISTS diagnosis_no_seq
+
+-- Table Definition
+CREATE TABLE "public"."diagnosis" (
+    "no" int4 NOT NULL DEFAULT nextval('diagnosis_no_seq'::regclass),
+    "date" date NOT NULL,
+    "desc" text NOT NULL,
+    "order_no" int4 NOT NULL,
+    "user_no" int4 NOT NULL,
+    CONSTRAINT "diagnosis_order_no_fkey" FOREIGN KEY ("order_no") REFERENCES "public"."order"("no"),
+    CONSTRAINT "diagnosis_user_no_fkey" FOREIGN KEY ("user_no") REFERENCES "public"."user"("no"),
+    PRIMARY KEY ("no")
+);
+4. table disease
+-- This script only contains the table creation statements and does not fully represent the table in database. It's still missing: indices, triggers. Do not use it as backup.
+
+-- Table Definition
+CREATE TABLE "public"."disease" (
+    "code" varchar NOT NULL,
+    "name" text NOT NULL DEFAULT ''::text,
+    "engName" text NOT NULL,
+    PRIMARY KEY ("code")
+);
+5. table medicine
+-- This script only contains the table creation statements and does not fully represent the table in database. It's still missing: indices, triggers. Do not use it as backup.
+
+-- Squences
+CREATE SEQUENCE IF NOT EXISTS medicine_no_seq
+
+-- Table Definition
+CREATE TABLE "public"."medicine" (
+    "no" int8 NOT NULL DEFAULT nextval('medicine_no_seq'::regclass),
+    "code" varchar NOT NULL,
+    "name" text NOT NULL,
+    "company" text NOT NULL,
+    "ingredient" text NOT NULL,
+    "efficacy" text NOT NULL,
+    "precaution" text NOT NULL,
+    "caution" text NOT NULL,
+    "sideeffect" text NOT NULL,
+    PRIMARY KEY ("no")
+);
+6. table message
+-- This script only contains the table creation statements and does not fully represent the table in database. It's still missing: indices, triggers. Do not use it as backup.
+
+-- Squences
+CREATE SEQUENCE IF NOT EXISTS message_no_seq
+DROP TYPE IF EXISTS "public"."message_state";
+CREATE TYPE "public"."message_state" AS ENUM ('Y', 'N');
+
+-- Table Definition
+CREATE TABLE "public"."message" (
+    "no" int4 NOT NULL DEFAULT nextval('message_no_seq'::regclass),
+    "user_no" int4 NOT NULL,
+    "patient_no" int4 NOT NULL,
+    "orderstate_no" int4 NOT NULL,
+    "state" "public"."message_state",
+    CONSTRAINT "message_user_no_fkey" FOREIGN KEY ("user_no") REFERENCES "public"."user"("no"),
+    CONSTRAINT "message_patient_no_fkey" FOREIGN KEY ("patient_no") REFERENCES "public"."patient"("no"),
+    CONSTRAINT "message_orderstate_no_fkey" FOREIGN KEY ("orderstate_no") REFERENCES "public"."order_state"("no"),
+    CONSTRAINT "message_patient_no_fkey1" FOREIGN KEY ("patient_no") REFERENCES "public"."patient"("no"),
+    CONSTRAINT "message_orderstate_no_fkey1" FOREIGN KEY ("orderstate_no") REFERENCES "public"."order_state"("no"),
+    PRIMARY KEY ("no")
+);
+
+-- Column Comments
+COMMENT ON COLUMN "public"."message"."state" IS 'data type: enum(''N'', ''Y'')';
+7. table order
+-- This script only contains the table creation statements and does not fully represent the table in database. It's still missing: indices, triggers. Do not use it as backup.
+
+-- Squences
+CREATE SEQUENCE IF NOT EXISTS order_no_seq
+
+-- Table Definition
+CREATE TABLE "public"."order" (
+    "no" int4 NOT NULL DEFAULT nextval('order_no_seq'::regclass),
+    "date" date NOT NULL,
+    "expenses" int4 NOT NULL,
+    "desc" text,
+    "user_no" int4 NOT NULL,
+    "orderstate_no" int4 NOT NULL,
+    "patient_no" int4 NOT NULL,
+    CONSTRAINT "order_user_no_fkey" FOREIGN KEY ("user_no") REFERENCES "public"."user"("no"),
+    CONSTRAINT "order_orderstate_no_fkey" FOREIGN KEY ("orderstate_no") REFERENCES "public"."order_state"("no"),
+    CONSTRAINT "order_patient_no_fkey" FOREIGN KEY ("patient_no") REFERENCES "public"."patient"("no"),
+    PRIMARY KEY ("no")
+);
+
+-- Column Comments
+COMMENT ON COLUMN "public"."order"."expenses" IS '기본 진료비 어떻게 할건지?!?!';
+8. table order_state
+-- This script only contains the table creation statements and does not fully represent the table in database. It's still missing: indices, triggers. Do not use it as backup.
+
+-- Squences
+CREATE SEQUENCE IF NOT EXISTS order_state_os_no_seq
+
+-- Table Definition
+CREATE TABLE "public"."order_state" (
+    "no" int4 NOT NULL DEFAULT nextval('order_state_os_no_seq'::regclass),
+    "state" varchar NOT NULL,
+    PRIMARY KEY ("no")
+);
+9. table patient
+-- This script only contains the table creation statements and does not fully represent the table in database. It's still missing: indices, triggers. Do not use it as backup.
+
+-- Squences
+CREATE SEQUENCE IF NOT EXISTS patient_p_no
+DROP TYPE IF EXISTS "public"."gender";
+CREATE TYPE "public"."gender" AS ENUM ('F', 'M');
+DROP TYPE IF EXISTS "public"."patient_insuarance";
+CREATE TYPE "public"."patient_insuarance" AS ENUM ('N', 'Y');
+
+-- Table Definition
+CREATE TABLE "public"."patient" (
+    "no" int4 NOT NULL DEFAULT nextval('patient_p_no'::regclass),
+    "name" varchar NOT NULL,
+    "gender" "public"."gender" NOT NULL,
+    "rrn" varchar NOT NULL,
+    "insuarance" "public"."patient_insuarance" NOT NULL,
+    "phone" varchar NOT NULL,
+    "address" varchar NOT NULL,
+    "length" float4 NOT NULL,
+    "weight" float4 NOT NULL,
+    "desc" text,
+    PRIMARY KEY ("no")
+);
+
+-- Column Comments
+COMMENT ON COLUMN "public"."patient"."insuarance" IS 'data type: enum(''Y'', ''N'') - ''적용'', ''비적용''';
+10 table prescription_c
+-- This script only contains the table creation statements and does not fully represent the table in database. It's still missing: indices, triggers. Do not use it as backup.
+
+-- Table Definition
+CREATE TABLE "public"."prescription_c" (
+    "clinic_no" int4,
+    "diagnosis_no" int4,
+    CONSTRAINT "prescription_c_clinic_no_fkey" FOREIGN KEY ("clinic_no") REFERENCES "public"."clinic"("no"),
+    CONSTRAINT "prescription_c_diagnosis_no_fkey" FOREIGN KEY ("diagnosis_no") REFERENCES "public"."diagnosis"("no")
+);
+11. table prescription_d
+-- This script only contains the table creation statements and does not fully represent the table in database. It's still missing: indices, triggers. Do not use it as backup.
+
+-- Table Definition
+CREATE TABLE "public"."prescription_d" (
+    "disease_code" varchar,
+    "diagnosis_no" int4,
+    CONSTRAINT "prescription_d_disease_di_code_fkey" FOREIGN KEY ("disease_code") REFERENCES "public"."disease"("code"),
+    CONSTRAINT "prescription_d_diagnosis_d_no_fkey" FOREIGN KEY ("diagnosis_no") REFERENCES "public"."diagnosis"("no")
+);
+12. table prescription_m
+-- This script only contains the table creation statements and does not fully represent the table in database. It's still missing: indices, triggers. Do not use it as backup.
+
+-- Table Definition
+CREATE TABLE "public"."prescription_m" (
+    "diagnosis_no" int4 NOT NULL,
+    "medicine_no" int4 NOT NULL,
+    "presmedicine_count" int4 NOT NULL,
+    "presmedicine_day" int4 NOT NULL,
+    CONSTRAINT "prescription_m_diagnosis_no_fkey" FOREIGN KEY ("diagnosis_no") REFERENCES "public"."diagnosis"("no"),
+    CONSTRAINT "prescription_m_medicine_no_fkey" FOREIGN KEY ("medicine_no") REFERENCES "public"."medicine"("no")
+);
+13. table schedule
+-- This script only contains the table creation statements and does not fully represent the table in database. It's still missing: indices, triggers. Do not use it as backup.
+
+-- Squences
+CREATE SEQUENCE IF NOT EXISTS schedule_schedule_no_seq
+CREATE SEQUENCE IF NOT EXISTS schedule_calendar_no_seq
+
+-- Table Definition
+CREATE TABLE "public"."schedule" (
+    "no" int4 NOT NULL DEFAULT nextval('schedule_schedule_no_seq'::regclass),
+    "reason" varchar NOT NULL,
+    "desc" text,
+    "user_no" int4,
+    "calendar_no" int4 NOT NULL DEFAULT nextval('schedule_calendar_no_seq'::regclass),
+    CONSTRAINT "schedule_user_no_fkey" FOREIGN KEY ("user_no") REFERENCES "public"."user"("no"),
+    CONSTRAINT "schedule_calendar_no_fkey" FOREIGN KEY ("calendar_no") REFERENCES "public"."calendar"("no"),
+    PRIMARY KEY ("no")
+);
+14. table user
+-- This script only contains the table creation statements and does not fully represent the table in database. It's still missing: indices, triggers. Do not use it as backup.
+
+-- Squences
+CREATE SEQUENCE IF NOT EXISTS user_u_no
+DROP TYPE IF EXISTS "public"."user_job";
+CREATE TYPE "public"."user_job" AS ENUM ('D', 'N');
+DROP TYPE IF EXISTS "public"."user_auth";
+CREATE TYPE "public"."user_auth" AS ENUM ('R', 'N', 'Y');
+DROP TYPE IF EXISTS "public"."gender";
+CREATE TYPE "public"."gender" AS ENUM ('F', 'M');
+
+-- Table Definition
+CREATE TABLE "public"."user" (
+    "no" int4 NOT NULL DEFAULT nextval('user_u_no'::regclass),
+    "email" varchar NOT NULL,
+    "password" varchar NOT NULL,
+    "name" varchar NOT NULL,
+    "rrn" varchar NOT NULL,
+    "address" varchar NOT NULL,
+    "job" "public"."user_job",
+    "auth" "public"."user_auth" NOT NULL,
+    "phone" varchar NOT NULL,
+    "gender" "public"."gender" NOT NULL,
+    PRIMARY KEY ("no")
+);
+
+-- Column Comments
+COMMENT ON COLUMN "public"."user"."gender" IS 'data type: enum(''M'', ''F'')';
